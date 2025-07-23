@@ -1,7 +1,4 @@
-from dotenv import load_dotenv
-load_dotenv()
-
-from os import environ as env
+from os import environ as env # <-- Yeh line theek hai
 
 class Telegram:
     API_ID = int(env.get("API_ID"))
@@ -14,4 +11,3 @@ class Telegram:
     YOUR_AMAZON_TAG = env.get('YOUR_AMAZON_TAG')
     EXTRAPE_SESSION_SECRET = env.get('EXTRAPE_SESSION_SECRET')
     LOG_GROUP_ID = int(env.get("LOG_GROUP_ID")) if env.get("LOG_GROUP_ID") else None
-
