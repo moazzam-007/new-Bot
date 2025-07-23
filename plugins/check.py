@@ -22,6 +22,7 @@ async def check(client, message):
                 text="This is a youtube or telegram link, please check it manually.\nhttps://t.me/{}/{}".format(
                     message.sender_chat.id, message.id
                 ),
+                disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
             )
         else:
             response = convert_rest(url)
@@ -35,9 +36,12 @@ async def check(client, message):
                     text="This is not a supported link, please check it manually.\n{}".format(
                         url
                     ),
+                    disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
                 )
                 await client.send_message(
-                    chat_id=Telegram.LOG_GROUP_ID, text=f"{response}"
+                    chat_id=Telegram.LOG_GROUP_ID,
+                    text=f"{response}",
+                    disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
                 )
 
     if completed_urls:
@@ -46,12 +50,20 @@ async def check(client, message):
 
         if message.photo:
             await client.send_photo(
-                chat_id=Telegram.MAIN_CHAT_ID, photo=message.photo.file_id, caption=text
+                chat_id=Telegram.MAIN_CHAT_ID,
+                photo=message.photo.file_id,
+                caption=text,
+                disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
             )
         else:
-            await client.send_message(chat_id=Telegram.MAIN_CHAT_ID, text=text)
+            await client.send_message(
+                chat_id=Telegram.MAIN_CHAT_ID,
+                text=text,
+                disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
+            )
     else:
         await client.send_message(
             chat_id=Telegram.LOG_GROUP_ID,
             text="No supported links found in the message.",
+            disable_web_page_preview=True # <-- YEH LINE ADD KI HAI
         )
