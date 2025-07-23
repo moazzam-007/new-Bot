@@ -1,0 +1,61 @@
+{
+    "name": "Telegram Deals Bot",
+    "description": "A Telegram bot that listens to deal channels and converts them to affiliate links",
+    "logo": "https://avatars.githubusercontent.com/u/105602908?v=4",
+    "keywords": ["telegram", "bot", "affiliate", "amazon", "deals"],
+    "website": "https://github.com/iseshu/affiliate-bot",
+    "repository": "https://github.com/iseshu/affiliate-bot",
+    "env": {
+      "PHONE_NUMBER": {
+        "description": "Your phone number associated with the Telegram account",
+        "value": ""
+      },
+      "API_ID": {
+        "description": "Get this value from https://my.telegram.org",
+        "value": ""
+      },
+      "API_HASH": {
+        "description": "Get this value from https://my.telegram.org",
+        "value": ""
+      },
+      "MAIN_CHAT_ID": {
+        "description": "The chat ID where the bot will send messages",
+        "value": ""
+      },
+      "LOG_GROUP_ID": {
+        "description": "The group ID where logs will be sent",
+        "value": ""
+      },
+      "STRING_SESSION": {
+        "description": "Your Pyrogram session string",
+        "value": ""
+      },
+      "CHANNELS": {
+        "description": "Comma-separated list of channel IDs to monitor for deals",
+        "value": ""
+      },
+      "FILTER_AMAZON_TAGS": {
+        "description": "Comma-separated list of Amazon tags to filter Amazon deals",
+        "value": ""
+      },
+      "YOUR_AMAZON_TAG": {
+        "description": "Your Amazon affiliate tag for generating affiliate links",
+        "value": ""
+      },
+      "EXTRAPE_SESSION_SECRET": {
+        "description": "Session secret for the Extrapé service",
+        "value": ""
+      }
+    },
+    "addons": [
+    ],
+    "buildpacks": [{
+      "url": "heroku/python"
+    }],
+    "formation": {
+      "worker": {
+        "quantity": 1,
+        "size": "eco"
+      }
+    }
+  }

@@ -1,0 +1,12 @@
+# Git ignore file for affiliate-bot-main
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.cpython-*.pyc
+
+# Environment variables (sensitive information)
+.env
+
+# Pyrogram session files (sensitive information)
+*.session
