@@ -2,17 +2,17 @@ from pyrogram import Client, filters
 from heplers.convert import amazon_convert, convert_rest
 import urllib.parse
 from config import Telegram
-import os # <-- YEH LINE ADD KI HAI (for os.remove)
-from heplers.screenshot_extractor import take_screenshot # <-- YEH LINE ADD KI HAI
+import os # For os.remove
+from heplers.screenshot_extractor import take_screenshot # For screenshot feature
 
 @Client.on_message(filters.regex(r"https?://[^\s]+") & filters.chat(Telegram.CHANNELS))
-async def check(client, message): # <-- YAHAN SE FUNCTION START HOTA HAI
+async def check(client, message):
     print("Plugin triggered for message:", message.caption or message.text)
 
     completed_urls = []
     text = message.caption or message.text  # Handle both caption and text
-
-    extracted_screenshot_path = None # <-- YEH LINE ADD KI HAI
+    
+    # extracted_screenshot_path = None # Yeh line yahan nahi aani chahiye, function ke andar initialisation hi kaafi hai
 
     for match in message.matches:
         url = match.group(0)
@@ -65,8 +65,9 @@ async def check(client, message): # <-- YAHAN SE FUNCTION START HOTA HAI
                 caption=final_text # NO disable_web_page_preview here
             )
         else: # Original message mein photo nahi hai, toh screenshot lene ki koshish karein
-            product_url_for_screenshot = completed_urls[0][1]
+            product_url_for_screenshot = completed_urls[0][1] # Pehle converted URL ka screenshot
 
+            # Screenshot sirf Amazon/Flipkart links ke liye
             if "amzn.to" in product_url_for_screenshot or "flipkart.com" in product_url_for_screenshot or "fkrt.it" in product_url_for_screenshot:
                 extracted_screenshot_path = await take_screenshot(product_url_for_screenshot)
             else:
@@ -76,7 +77,7 @@ async def check(client, message): # <-- YAHAN SE FUNCTION START HOTA HAI
                 try:
                     await client.send_photo(
                         chat_id=Telegram.MAIN_CHAT_ID,
-                        photo=extracted_screenshot_path,
+                        photo=extracted_screenshot_path, # Local file path use karein
                         caption=final_text
                         # disable_web_page_preview=True # NO disable_web_page_preview here
                     )
