@@ -2,35 +2,59 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import os
 import tempfile
+import asyncio # Async operations ke liye
 
 async def take_screenshot(url: str) -> str or None:
+    """
+    Takes a screenshot of the given URL using a headless Chrome browser.
+    Returns the path to the saved screenshot file or None if an error occurs.
+    """
+    print(f"DEBUG: Attempting to take screenshot for: {url}")
+
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    chrome_options.add_argument("--headless")  # Browser window dikhayi nahi degi
     chrome_options.add_argument("--no-sandbox") # Render/Linux environments ke liye zaroori
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--window-size=1280,720") # Screenshot size
+    chrome_options.add_argument("--disable-dev-shm-usage") # Docker/Container environments ke liye zaroori
+    chrome_options.add_argument("--window-size=1280,720") # Screenshot resolution
+    chrome_options.add_argument("--disable-gpu") # Cloud environments ke liye
 
-    # Render par Chromium ka path setup karna padega
-    # Ye path Render ke build environment par depend karega
-    # Usually Render buildpacks khud handle kar lete hain, ya manually specify karna padta hai
-    # For Render, you might need to specify the binary path
-    # binary_path = os.environ.get("CHROMIUM_PATH", "/usr/bin/chromium-browser") # Example path
-    # driver = webdriver.Chrome(executable_path=binary_path, options=chrome_options)
+    # Render par Chromium/Chrome executable ka path
+    # Render automatic detect kar leta hai agar buildpack sahi ho
+    # Ya fir, Render ke environment variables mein path set karna pad sakta hai
+    # For example: CHROMIUM_PATH = /usr/bin/google-chrome ya /usr/bin/chromium-browser
+    # Agar ye environment variable set ho to use karein, warna default
 
-    # Simple setup, hoping Render has Chrome/Chromium in PATH
-    driver = webdriver.Chrome(options=chrome_options)
+    # Ye Render ke liye Chrome binary ka expected path hai agar buildpack sahi se set hai
+    # Render automatically Chromium install karta hai.
+    # Agar phir bhi error aaye, to environment variable CHROMIUM_BIN ko Render settings me set karein
+    # For example: CHROMIUM_BIN: /usr/bin/google-chrome-stable
 
+    driver = None
     try:
+        # Check for Chrome binary path in environment variables (for Render)
+        chrome_binary_path = os.environ.get("CHROMIUM_PATH") or os.environ.get("CHROME_BIN")
+
+        if chrome_binary_path:
+            print(f"DEBUG: Using Chrome binary from: {chrome_binary_path}")
+            driver = webdriver.Chrome(executable_path=chrome_binary_path, options=chrome_options)
+        else:
+            # Fallback for local testing or if Render finds it automatically
+            print("DEBUG: Using default Chrome/Chromium executable path.")
+            driver = webdriver.Chrome(options=chrome_options)
+
         driver.get(url)
-        # Thodi der wait karein taaki page poora load ho jaaye
-        driver.implicitly_wait(5) # Wait for elements to appear
+        # Page load hone ke liye thoda wait karein
+        await asyncio.sleep(5) # 5 seconds wait karein for page content to load
 
         with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as temp_file:
             screenshot_path = temp_file.name
             driver.save_screenshot(screenshot_path)
+
+        print(f"DEBUG: Screenshot saved to: {screenshot_path}")
         return screenshot_path
     except Exception as e:
-        print(f"Error taking screenshot of {url}: {e}")
+        print(f"ERROR: Failed to take screenshot of {url}: {e}")
         return None
     finally:
-        driver.quit()
+        if driver:
+            driver.quit()
